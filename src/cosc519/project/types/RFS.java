@@ -13,7 +13,7 @@
  
  public class RFS
  {
- 	public class FileEntry
+ 	public class FileEntry // May not need this, up to coders.
  	{
  		private int    mOffset;
  		private char[] mName;
@@ -21,12 +21,12 @@
  	};
  	
 	// Private Members
-	private int mRaidType;
-	private int mRaidId;
-	private int mDevId;
+	private int mRaidType; // Refer to Codes definition
+	private int mRaidId; // Unique per RFS, ids a grp of devices
+	private int mRaidMemberCount; // The number of UsbDevs required
 	//private int[] mRaidMembers; // will be allocated to size of Codes.MAX_MEMBERS - not needed
-	private ArrayList<FileEntry> mEntries;
-	private ArrayList<UsbDevice> mUsbDevs;
+	//private ArrayList<FileEntry> mEntries; // may not need this, up to coder
+	private ArrayList<UsbDevice> mUsbDevs; // This structure may not be complete if not all usb devs are present.
 	
 	// Public Methods
 	public ArrayList<File> getListOfFiles()
