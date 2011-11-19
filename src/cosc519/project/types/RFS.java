@@ -1,31 +1,28 @@
 /**************************************************************
  * Filename: RFS.java                                         *
  * Class: COSC519                                             *
- * Description: Implementation of the RAID Filesystem object. *
- * that resides on each usb device.                           *
+ * Description: Implementation of the RAID Filesystem that    *
+ * performs all the RAID ops on each device.                  *
  * Package: cosc519.project.types                             *
  **************************************************************/ 
  
  package cosc519.project.types;
  
+ import cosc519.project.types.Codes;
  import cosc519.project.UsbDevice;
+ import java.io.FileOutputStream;
+ import java.io.DataOutputStream;
+ import java.io.IOException;
  import java.util.ArrayList;
  
  public class RFS
  {
- 	public class FileEntry // May not need this, up to coders.
- 	{
- 		private int    mOffset;
- 		private char[] mName;
- 		private int    mType;
- 	};
- 	
+	
 	// Private Members
 	private int mRaidType; // Refer to Codes definition
 	private int mRaidId; // Unique per RFS, ids a grp of devices
 	private int mRaidMemberCount; // The number of UsbDevs required
 	//private int[] mRaidMembers; // will be allocated to size of Codes.MAX_MEMBERS - not needed
-	//private ArrayList<FileEntry> mEntries; // may not need this, up to coder
 	private ArrayList<UsbDevice> mUsbDevs; // This structure may not be complete if not all usb devs are present.
 	
 	// Public Methods
@@ -48,4 +45,69 @@
 	{
 	
 	}
+	
+	public static void FormatFile (UsbDevice device) 
+	{
+
+        // create byte array
+        // 18 bytes for ID/TYPE/SIBLINGS
+        // 22 * 32768 for FAT
+        // 2097152 bytes for data
+        byte[] blankFile = new byte[Codes.TOTAL_SIZE];
+        
+        blankFile[0] = device.getRaidID(); // USB Device ID (00...0F)
+        blankFile[1] = device.getNumOfDevicesInConfig(); // 00 - FF potential
+        blankFile[2] = device.getRaidID_Seq(); // sequence in RAID Config
+        blankFile[3] = device.getRaidType(); // Raid Type (00 or 01)
+
+        // Block address where data begins
+        // Right now, grabs the byte conversion method from the USBDevice class
+        byte[] startingAddress = UsbDevice.intToByteArray(Codes.STARTING_ADDRESS, 3);
+
+        // EE byte is for the first file in FAT to indicate no files present
+        // Sets first byte of each meta-data block to 1E
+        // 1E is defined as empty file.
+        // It is possible to have just one file use all blocks of data
+        // but it is necessary to cycle through until we reach a meta-data block
+        // whose first byte is 1E, then we know to stop the search because there are 
+        // no more files, but NOT necessarily no more space.
+        // 
+        // Available space is determined by the last file's placement and its size.
+        for(int i = Codes.HEADER_SIZE; i < Codes.FAT_LENGTH; i += Codes.META_DATA_SIZE) {
+            if(i == Codes.HEADER_SIZE) {
+                blankFile[i] = (byte) 0xEE;
+                
+                // Sets the 14-16th bytes to the starting address
+                blankFile[i+14] = startingAddress[0];
+                blankFile[i+15] = startingAddress[1];
+                blankFile[i+16] = startingAddress[2];
+                
+            // If we aren't in the first FAT entry, then only create a FAT entry
+            // that has 0x1E permission byte
+            } else blankFile[i] = (byte) 0x1E;
+        }
+
+        try {
+
+          // Create an output stream to the file.
+          FileOutputStream file_output = new FileOutputStream (new java.io.File(device.getPathToUSB() + device.getUSBFName()));
+
+          // Wrap the FileOutputStream with a DataOutputStream
+          DataOutputStream data_out = new DataOutputStream (file_output);
+
+          // Write the data
+          for (int i=0; i < blankFile.length; i++) {
+              data_out.writeByte(blankFile[i]);
+          }
+
+          // Close file 
+          file_output.close();
+          
+          // Set USB device to formatted (true)
+          device.setFormatStatus(true);
+        }
+        catch (IOException e) {
+           System.out.println ("Exception = " + e );
+        }
+    }
  }
