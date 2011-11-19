@@ -29,7 +29,7 @@
  	public static final int TYPE_RAID_1_MIRRORING = 1;
  	
  	// Project Constants
- 	public static final int MAX_MEMBERS = 4;
+ 	//public static final int MAX_MEMBERS = 4; // don't require this atm, uncomment if needed
  	
  	// OS Specific Paths
  	public static final String PATH_MAC = "/Volumes";
