@@ -33,6 +33,24 @@
  		
  	}
  	
+ 	public static ArrayList<UsbDevice> testList(int objCount)
+ 	{
+ 		ArrayList<UsbDevice> testObjects = new ArrayList<UsbDevice>();
+ 		String pathToUSB = "/testpath/";
+ 		String USBFName = "usbfs.bin";
+ 		byte raidID;
+ 		byte numOfDevicesInConfig;
+ 		byte raidID_Seq; 
+ 		byte raidType;
+ 		
+ 		for(int i = 0; i < objCount; ++i)
+ 		{
+ 			
+ 			
+ 			testObjects.add(new UsbDevice(
+ 		}
+ 	}
+ 	
  	public static void displayHeader()
  	{
  		System.out.println("*************************************");
@@ -49,6 +67,22 @@
  		System.out.println("> List (I)nitialized RAID File Systems[RFS]");
  		System.out.println("> (C)reate New RAID File System");
  		System.out.println("> (Q)uit");
+ 	}
+ 	
+ 	public static void displayUsbDevices(ArrayList<UsbDevice> pUsbDevList) throws NullPointerException
+ 	{
+ 		if(pUsbDevList == null)
+ 		{
+ 			throw NullPointerException("displayUsbDevices(): the list is null");
+ 		}
+ 		
+ 		for(UsbDevice device: pUsbDevList)
+ 		{
+ 			System.out.println("Usb Device #");
+ 			System.out.println("Path: ");
+ 			System.out.println("RAID Id: ");
+ 			System.out.println("RAID Sequence Id: ");
+ 		}
  	}
  	
  	public static String promptForInput(String pSuffix)

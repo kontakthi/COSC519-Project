@@ -37,10 +37,10 @@
  	
  	// Size definitions
  	public static final int DATA_SIZE = 8388608;  // in bytes
-    public static final int BLOCK_SIZE = 512; // in bytes
-    public static final int META_DATA_SIZE = 23; // in bytes
-    public static final int HEADER_SIZE = 4;
-    public static final int FAT_LENGTH = (DATA_SIZE/BLOCK_SIZE)*META_DATA_SIZE; // in bytes
-    public static final int STARTING_ADDRESS = HEADER_SIZE + FAT_LENGTH;
-    public static final int TOTAL_SIZE = HEADER_SIZE + FAT_LENGTH + DATA_SIZE;
+	public static final int BLOCK_SIZE = 512; // in bytes
+	public static final int META_DATA_SIZE = 23; // in bytes
+	public static final int HEADER_SIZE = 4;
+	public static final int FAT_LENGTH = (DATA_SIZE/BLOCK_SIZE)*META_DATA_SIZE; // in bytes
+	public static final int STARTING_ADDRESS = HEADER_SIZE + FAT_LENGTH;
+	public static final int TOTAL_SIZE = HEADER_SIZE + FAT_LENGTH + DATA_SIZE;
  }
