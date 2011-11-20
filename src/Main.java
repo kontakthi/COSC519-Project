@@ -10,8 +10,9 @@
  import cosc519.project.FileManagerSingleton;
  import cosc519.project.UsbDevice;
  import cosc519.project.types.Codes;
-
  
+ import java.lang.NullPointerException;
+ import java.util.ArrayList; 
  import java.io.Console;
  
  public class Main
@@ -38,17 +39,19 @@
  		ArrayList<UsbDevice> testObjects = new ArrayList<UsbDevice>();
  		String pathToUSB = "/testpath/";
  		String USBFName = "usbfs.bin";
- 		byte raidID;
- 		byte numOfDevicesInConfig;
- 		byte raidID_Seq; 
- 		byte raidType;
+ 		byte raidID = 0;
+ 		byte numOfDevicesInConfig = 0;
+ 		byte raidID_Seq = 0; 
+ 		byte raidType = 0;
  		
  		for(int i = 0; i < objCount; ++i)
  		{
  			
  			
- 			testObjects.add(new UsbDevice(
+ 			testObjects.add(new UsbDevice(pathToUSB, USBFName, raidID, numOfDevicesInConfig, raidID_Seq, raidType));
  		}
+ 		
+ 		return testObjects;
  	}
  	
  	public static void displayHeader()
@@ -73,7 +76,7 @@
  	{
  		if(pUsbDevList == null)
  		{
- 			throw NullPointerException("displayUsbDevices(): the list is null");
+ 			throw new NullPointerException("displayUsbDevices(): the list is null");
  		}
  		
  		for(UsbDevice device: pUsbDevList)
