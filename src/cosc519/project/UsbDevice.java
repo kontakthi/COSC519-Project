@@ -18,7 +18,6 @@
  
  public class UsbDevice
  {  
-     //fgdfgb
     private String WORKING_DIRECTORY = null;    
     private String FORMATTED_FILE_DEST = null;
     
@@ -30,7 +29,9 @@
     
     /* Create USB Device
      * 
-
+     * First param: path to USB :: Windows = "F:\\" :: Mac = "/Volumes/drivename" :: Unix = "/media/drivename"
+     * 2nd param: file.ext name // right now, max is 8 characters for filename, three for extension
+     *      Any changes to the filename length will NOT trickle down
      *      I recommend not changing this limitation, but perhaps providing a truncating method BLAHBL~1....BLAHBL~2...etc
      *      Or just only provide file names with 8 characters :D. Makes my life easier.
      * 
