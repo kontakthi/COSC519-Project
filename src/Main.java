@@ -14,6 +14,7 @@
  import java.lang.NullPointerException;
  import java.util.ArrayList; 
  import java.io.Console;
+ import java.util.Random;
  
  public class Main
  {
@@ -44,9 +45,11 @@
  		byte raidID_Seq = 0; 
  		byte raidType = 0;
  		
+ 		Random rng = new Random();
+ 		
  		for(int i = 0; i < objCount; ++i)
  		{
- 			
+ 			raidID = (byte)rng.nextInt();
  			
  			testObjects.add(new UsbDevice(pathToUSB, USBFName, raidID, numOfDevicesInConfig, raidID_Seq, raidType));
  		}
