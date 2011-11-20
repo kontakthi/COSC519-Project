@@ -10,6 +10,7 @@
  import cosc519.project.FileManagerSingleton;
  import cosc519.project.UsbDevice;
  import cosc519.project.types.Codes;
+ import cosc519.project.types.RFS;
  
  import java.lang.NullPointerException;
  import java.util.ArrayList; 
@@ -35,11 +36,12 @@
  		
  	}
  	
- 	public static ArrayList<UsbDevice> testList(int objCount)
+ 	public static ArrayList<UsbDevice> testUsbDevList(int objCount)
  	{
  		ArrayList<UsbDevice> testObjects = new ArrayList<UsbDevice>();
  		String pathToUSB = "/testpath/";
- 		String USBFName = "usbfs.bin";
+ 		String newPath;
+ 		String USBFName = "/usbfs.bin";
  		byte raidID = 0;
  		byte numOfDevicesInConfig = 0;
  		byte raidID_Seq = 0; 
@@ -49,9 +51,13 @@
  		
  		for(int i = 0; i < objCount; ++i)
  		{
+ 			newPath = pathToUSB + Integer.toString(rng.nextInt()); 
  			raidID = (byte)rng.nextInt();
+ 			numOfDevicesInConfig = (byte)rng.nextInt();
+ 			raidID_Seq = (byte)rng.nextInt();
+ 			raidType = (byte)(Math.abs(rng.nextInt()) % 2);
  			
- 			testObjects.add(new UsbDevice(pathToUSB, USBFName, raidID, numOfDevicesInConfig, raidID_Seq, raidType));
+ 			testObjects.add(new UsbDevice(newPath, USBFName, raidID, numOfDevicesInConfig, raidID_Seq, raidType));
  		}
  		
  		return testObjects;
@@ -75,22 +81,76 @@
  		System.out.println("> (Q)uit");
  	}
  	
- 	public static void displayUsbDevices(ArrayList<UsbDevice> pUsbDevList) throws NullPointerException
+ 	public static void displayUsbDevices(ArrayList<UsbDevice> pUsbDevList, int tabs) throws NullPointerException
  	{
  		if(pUsbDevList == null)
  		{
  			throw new NullPointerException("displayUsbDevices(): the list is null");
  		}
  		
+ 		String tabulate = "";
+ 		for(int i = 0; i < tabs; ++i)
+ 		{	
+ 			tabulate += "\t";
+ 		}
+ 		
+ 		Integer i = 0;
  		for(UsbDevice device: pUsbDevList)
  		{
- 			System.out.println("Usb Device #");
- 			System.out.println("Path: ");
- 			System.out.println("RAID Id: ");
- 			System.out.println("RAID Sequence Id: ");
- 			
  			System.out.println("");
+ 		
+ 			System.out.println(tabulate + "Usb Device > "      + i.toString());
+ 			System.out.println(tabulate + "Path: "             + device.getPathToUSB() + device.getUSBFName());
+ 			System.out.println(tabulate + "RAID Id: "          + Byte.toString(device.getRaidID()));
+ 			System.out.println(tabulate + "RAID Sequence Id: " + Byte.toString(device.getRaidID_Seq()));
+ 			System.out.println(tabulate + "RAID Type: "        + Codes.getRaidTypeString(device.getRaidType()));
+ 			
+ 			++i;
  		}
+ 	}
+ 	
+ 	public static void displayRfs(ArrayList<RFS> pRfsList) throws NullPointerException
+ 	{
+ 		if(pRfsList == null)
+ 		{
+ 			throw new NullPointerException("displayRfs(): the list is null");
+ 		}	
+ 		
+ 		Integer i = 0;
+ 		
+ 		for(RFS rfs: pRfsList)
+ 		{
+ 			System.out.println("");
+ 		
+ 			System.out.println("RFS > "             + i.toString());
+ 			System.out.println("RAID Id: "          + Byte.toString(rfs.getRaidId()));
+ 			System.out.println("RAID Type: "        + Codes.getRaidTypeString(rfs.getRaidType()));
+ 			System.out.println("RFS State: "        + Codes.getRfsStatusString(rfs.isComplete()));
+ 			System.out.println("Num of Members: "   + Byte.toString(rfs.getMemberCount()));
+ 			System.out.println("USB Devices:");
+ 			
+ 			// List usb devices belonging to this RFS
+ 			ArrayList<UsbDevice> usbDevList = rfs.getUsbDevList();
+			displayUsbDevices(usbDevList, 1);
+ 			
+ 			++i;
+ 		}
+ 	}
+ 	
+ 	public static void handleListUsbDevices()
+ 	{
+ 		// Generate Test Data, uncomment for release
+ 		ArrayList<UsbDevice> list = testUsbDevList(5);
+ 	
+ 		// Display available usb devices
+ 		displayUsbDevices(list, 0);
+ 	}
+ 	
+ 	public static void handleListRfs()
+ 	{
+ 		// Generate Test Data, uncomment for release
+ 		
+ 		// Display available RFS
  	}
  	
  	public static String promptForInput(String pSuffix)
@@ -134,6 +194,7 @@
  		}
  		else if(pInput.compareTo(MAIN_MENU_USB) == 0)
  		{
+ 			handleListUsbDevices();
  			
  			result = Codes.RESULT_SUCCESS;
  		}
