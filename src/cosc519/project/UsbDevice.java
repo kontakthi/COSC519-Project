@@ -542,7 +542,7 @@
                         // seek to location of data
                         raf.seek(byteArrayToInt(dataLocation, 3));
                         raf.readFully(buffer = new byte[byteArrayToInt(dataLocationBlockSize,3) * Codes.BLOCK_SIZE], 0, byteArrayToInt(dataLocationBlockSize, 3) * Codes.BLOCK_SIZE);
-                        System.out.println("I created a buffer that is " + ((buffer.length / Codes.BLOCK_SIZE)) + " blocks long.");
+                        //System.out.println("I created a buffer that is " + ((buffer.length / Codes.BLOCK_SIZE)) + " blocks long.");
                         
                         // write empty bytes to data location
                         raf.seek(byteArrayToInt(dataLocation,3));
