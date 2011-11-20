@@ -542,7 +542,7 @@
                         // seek to location of data
                         raf.seek(byteArrayToInt(dataLocation, 3));
                         raf.readFully(buffer = new byte[byteArrayToInt(dataLocationBlockSize,3) * Codes.BLOCK_SIZE], 0, byteArrayToInt(dataLocationBlockSize, 3) * Codes.BLOCK_SIZE);
-                        System.out.println("I created a buffer that is " + ((buffer.length / Codes.BLOCK_SIZE)) + " blocks long.");
+                        //System.out.println("I created a buffer that is " + ((buffer.length / Codes.BLOCK_SIZE)) + " blocks long.");
                         
                         // write empty bytes to data location
                         raf.seek(byteArrayToInt(dataLocation,3));
@@ -660,7 +660,11 @@
                     
                     // Zeroes out the FAT Block
                     FATBlock = FATBlockEmpty;
-                }
+                    
+                // Break early if you've reached a FAT entry without data.
+                // 0x1E is and always should be the first new FAT entry
+                } else if (permFile == (byte) 0x1E)
+                    break;
             }
             
             raf.close();
