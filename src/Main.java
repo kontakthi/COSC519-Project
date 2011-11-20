@@ -89,7 +89,7 @@
  			System.out.println("RAID Id: ");
  			System.out.println("RAID Sequence Id: ");
  			
- 			System.out.println("------------------------------------");
+ 			System.out.println("");
  		}
  	}
  	
