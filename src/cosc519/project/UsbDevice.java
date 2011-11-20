@@ -660,7 +660,11 @@
                     
                     // Zeroes out the FAT Block
                     FATBlock = FATBlockEmpty;
-                }
+                    
+                // Break early if you've reached a FAT entry without data.
+                // 0x1E is and always should be the first new FAT entry
+                } else if (permFile == (byte) 0x1E)
+                    break;
             }
             
             raf.close();
