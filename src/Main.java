@@ -63,6 +63,34 @@
  		return testObjects;
  	}
  	
+ 	/*public static ArrayList<RFS> testRfsList(int objCount)
+ 	{
+ 		ArrayList<RFS> testObjects = new ArrayList<RFS>();
+ 		
+ 		String pathToUSB = "/testpath/";
+ 		String newPath;
+ 		String USBFName = "/usbfs.bin";
+ 		byte raidID = 0;
+ 		byte numOfDevicesInConfig = 0;
+ 		byte raidID_Seq = 0; 
+ 		byte raidType = 0;
+ 		
+ 		Random rng = new Random();
+ 		
+ 		for(int i = 0; i < objCount; ++i)
+ 		{
+ 			newPath = pathToUSB + Integer.toString(rng.nextInt()); 
+ 			raidID = (byte)rng.nextInt();
+ 			numOfDevicesInConfig = (byte)rng.nextInt();
+ 			raidID_Seq = (byte)rng.nextInt();
+ 			raidType = (byte)(Math.abs(rng.nextInt()) % 2);
+ 			
+ 			testObjects.add(new UsbDevice(newPath, USBFName, raidID, numOfDevicesInConfig, raidID_Seq, raidType));
+ 		}
+ 		
+ 		return testObjects;
+ 	}*/
+ 	
  	public static void displayHeader()
  	{
  		System.out.println("*************************************");
