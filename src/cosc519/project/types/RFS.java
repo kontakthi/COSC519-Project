@@ -10,19 +10,51 @@
  
  import cosc519.project.types.Codes;
  import cosc519.project.UsbDevice;
+ 
  import java.io.FileOutputStream;
  import java.io.DataOutputStream;
  import java.io.IOException;
  import java.util.ArrayList;
+ import java.lang.NullPointerException;
+ import java.lang.IllegalAccessException;
  
  public class RFS
  {
 	// Private Members
-	private byte mRaidType; // Refer to Codes definition
-	private byte mRaidId; // Unique per RFS, ids a grp of devices
-	private byte mRaidMemberCount; // The number of UsbDevs required
-	private ArrayList<UsbDevice> mUsbDevs; // This structure may not be complete if not all usb devs are available.
-	private boolean mIsComplete; // If all usb device members are found, the RFS is complete, else incomplete
+	private byte mRaidType;                   // Refer to Codes definition
+	private byte mRaidId;                     // Unique per RFS, ids a grp of devices
+	private byte mRaidMemberCount;            // The number of UsbDevs required
+	private ArrayList<UsbDevice> mUsbDevList; // This structure may not be complete if not all usb devs are available.
+	private boolean mIsComplete;              // If all usb device members are found, the RFS is complete, else incomplete
+	
+	// Constructors
+	// Use to initialize a new RFS with a previously formatted usb device, add usb devices with the add usbdev method
+	public RFS(UsbDevice pUsbDev) throws NullPointerException, IllegalAccessException
+	{
+		if(pUsbDev == null)
+		{
+			throw new NullPointerException("RFS(): USB device argument is null. WTF mate?!");
+		}
+		
+		if(pUsbDev.getFormatStatus())
+		{
+			this.mRaidType        = pUsbDev.getRaidType();
+			this.mRaidId          = pUsbDev.getRaidID();
+			this.mRaidMemberCount = pUsbDev.getNumOfDevicesInConfig();
+			this.mUsbDevList      = new ArrayList<UsbDevice>(this.mRaidMemberCount);
+			this.mUsbDevList.add(pUsbDev.getRaidID_Seq(), pUsbDev);
+		}
+		else
+		{
+			throw new IllegalAccessException("RFS(): USB device is not formatted. Cannot create RFS object.");
+		}
+	}
+	
+	// Use to initialize a new RFS object with a list of usb devices
+	public RFS(byte pRaidType, byte pRaidId, ArrayList<UsbDevice> pUsbDevList)
+	{
+		
+	}
 	
 	// Accessors - Read Only
 	public byte getRaidType()
@@ -42,7 +74,7 @@
 	
 	public ArrayList<UsbDevice> getUsbDevList()
 	{
-		return this.mUsbDevs;
+		return this.mUsbDevList;
 	}
 	
 	public boolean isComplete()
