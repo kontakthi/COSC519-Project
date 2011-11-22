@@ -43,6 +43,7 @@
 			this.mRaidMemberCount = pUsbDev.getNumOfDevicesInConfig();
 			this.mUsbDevList      = new ArrayList<UsbDevice>(this.mRaidMemberCount);
 			this.mUsbDevList.add(pUsbDev.getRaidID_Seq(), pUsbDev);
+                        setCompleteState();
 		}
 		else
 		{
@@ -72,15 +73,29 @@
 		return this.mRaidMemberCount;
 	}
 	
-	public ArrayList<UsbDevice> getUsbDevList()
-	{
-		return this.mUsbDevList;
-	}
+//	public ArrayList<UsbDevice> getUsbDevList()
+//	{
+//		return this.mUsbDevList;
+//	}
+        
+        private void setCompleteState()
+        {
+            if (this.mUsbDevList.size() == this.mRaidMemberCount)
+                this.mIsComplete = true;
+            else
+                this.mIsComplete = false;
+        }        
 	
 	public boolean isComplete()
 	{
 		return this.mIsComplete;
 	}
+        
+        public void addUsbDevice(UsbDevice toBeAdded)
+        {
+           this.mUsbDevList.add(toBeAdded.getRaidID_Seq(), toBeAdded);
+           setCompleteState();
+        }
 	
 	// Public Methods
 	public ArrayList<File> getListOfFiles()
