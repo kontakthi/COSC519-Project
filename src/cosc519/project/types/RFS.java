@@ -28,7 +28,7 @@
 	private boolean mIsComplete;              // If all usb device members are found, the RFS is complete, else incomplete
 	
 	// Constructors
-	// Use to initialize a new RFS with a previously formatted usb device, add usb devices with the add usbdev method
+	// Use to initialize a new RFS with a previously formatted usb device, add usb devices with the addUsbDevice() method
 	public RFS(UsbDevice pUsbDev) throws NullPointerException, IllegalAccessException
 	{
 		if(pUsbDev == null)
@@ -43,13 +43,54 @@
 			this.mRaidMemberCount = pUsbDev.getNumOfDevicesInConfig();
 			this.mUsbDevList      = new ArrayList<UsbDevice>(this.mRaidMemberCount);
 			this.mUsbDevList.add(pUsbDev.getRaidID_Seq(), pUsbDev);
-                        setCompleteState();
+            
+            setCompleteState();
 		}
 		else
 		{
-			throw new IllegalAccessException("RFS(): USB device is not formatted. Cannot create RFS object.");
+			throw new IllegalAccessException("RFS(UsbDevice): USB device is not formatted. Cannot create RFS object.");
 		}
 	}
+	
+	// Same as constructor above but initializes with complete list.
+	public RFS(ArrayList<UsbDevice> pUsbDevList) throws NullPointerException, IllegalAccessException
+	{
+		if(pUsbDevList == null)
+		{
+			throw new NullPointerException("RFS(): USB device list argument is null. WTF mate?!");
+		}
+		
+		// Init raidid with first usbdevice
+		byte raidId = pUsbDevList.get(0).getRaidID();
+		
+		// Iterate through usb device list to check if eash is formatted
+		// uncomment for release
+		/*for(int i = 0; i < pUsbDevList.size(); ++i)
+		{
+			if(pUsbDevList.get(i).getFormatStatus() == false)
+			{
+				throw new IllegalAccessException("RFS(ArrayList<UsbDevice>): A USB device is not formatted. Cannot create RFS object.");
+			}
+			
+			if(raidId != pUsbDevList.get(i).getRaidID())
+			{
+				throw new IllegalAccessException("RFS(ArrayList<UsbDevice>): A USB device's RAID ID does not match the others. Cannot create RFS object.");
+			}
+			else
+			{
+				raidId = pUsbDevList.get(i).getRaidID();
+			}
+		}*/
+		
+		// Passed checks, initialize the RFS object
+		this.mRaidType        = pUsbDevList.get(0).getRaidType();
+		this.mRaidId          = pUsbDevList.get(0).getRaidID();
+		this.mRaidMemberCount = pUsbDevList.get(0).getNumOfDevicesInConfig();
+		this.mUsbDevList      = pUsbDevList;
+
+        setCompleteState();
+	}
+	
 	
 	// Use to initialize a new RFS object with a list of usb devices
 	public RFS(byte pRaidType, byte pRaidId, ArrayList<UsbDevice> pUsbDevList)
@@ -73,29 +114,29 @@
 		return this.mRaidMemberCount;
 	}
 	
-//	public ArrayList<UsbDevice> getUsbDevList()
-//	{
-//		return this.mUsbDevList;
-//	}
+	public ArrayList<UsbDevice> getUsbDevList()
+	{
+		return this.mUsbDevList;
+	}
         
-        private void setCompleteState()
-        {
-            if (this.mUsbDevList.size() == this.mRaidMemberCount)
-                this.mIsComplete = true;
-            else
-                this.mIsComplete = false;
-        }        
+    private void setCompleteState()
+    {
+        if (this.mUsbDevList.size() == this.mRaidMemberCount)
+            this.mIsComplete = true;
+        else // Need to check if size of usbdev list might be greater than the intended member count
+            this.mIsComplete = false;
+    }        
 	
 	public boolean isComplete()
 	{
 		return this.mIsComplete;
 	}
         
-        public void addUsbDevice(UsbDevice toBeAdded)
-        {
-           this.mUsbDevList.add(toBeAdded.getRaidID_Seq(), toBeAdded);
-           setCompleteState();
-        }
+    public void addUsbDevice(UsbDevice toBeAdded)
+    {
+        this.mUsbDevList.add(toBeAdded.getRaidID_Seq(), toBeAdded);
+        setCompleteState();
+    }
 	
 	// Public Methods
 	public ArrayList<File> getListOfFiles()
@@ -118,7 +159,7 @@
 	
 	}
 	
-	public static void FormatFile (UsbDevice device) 
+	public static void formatFile (UsbDevice device) 
 	{
 
         // create byte array

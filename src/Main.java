@@ -22,7 +22,7 @@
  	// Input Options
  	private static final String MAIN_MENU_QUIT   = "q";
  	private static final String MAIN_MENU_USB    = "u";
- 	private static final String MAIN_MENU_RAID   = "i";
+ 	private static final String MAIN_MENU_RFS    = "i";
  	private static final String MAIN_MENU_CREATE = "c";
  	
  	private static final String PROMPT_SUFFIX = "?> ";
@@ -49,12 +49,12 @@
  		
  		Random rng = new Random();
  		
+ 		numOfDevicesInConfig = (byte)objCount;
+ 		raidID = (byte)rng.nextInt();
  		for(int i = 0; i < objCount; ++i)
  		{
  			newPath = pathToUSB + Integer.toString(rng.nextInt()); 
- 			raidID = (byte)rng.nextInt();
- 			numOfDevicesInConfig = (byte)rng.nextInt();
- 			raidID_Seq = (byte)rng.nextInt();
+ 			raidID_Seq = (byte)i;
  			raidType = (byte)(Math.abs(rng.nextInt()) % 2);
  			
  			testObjects.add(new UsbDevice(newPath, USBFName, raidID, numOfDevicesInConfig, raidID_Seq, raidType));
@@ -63,13 +63,14 @@
  		return testObjects;
  	}
  	
- 	/*public static ArrayList<RFS> testRfsList(int objCount)
+ 	public static ArrayList<RFS> testRfsList(int objCount)
  	{
  		ArrayList<RFS> testObjects = new ArrayList<RFS>();
+ 		ArrayList<UsbDevice> usbDevList;
  		
  		String pathToUSB = "/testpath/";
  		String newPath;
- 		String USBFName = "/usbfs.bin";
+ 		String USBFName  = "/usbfs.bin";
  		byte raidID = 0;
  		byte numOfDevicesInConfig = 0;
  		byte raidID_Seq = 0; 
@@ -85,19 +86,27 @@
  			raidID_Seq = (byte)rng.nextInt();
  			raidType = (byte)(Math.abs(rng.nextInt()) % 2);
  			
- 			testObjects.add(new UsbDevice(newPath, USBFName, raidID, numOfDevicesInConfig, raidID_Seq, raidType));
+ 			usbDevList = testUsbDevList(3);
+ 			try
+ 			{
+ 				testObjects.add(new RFS(usbDevList));
+ 			}
+ 			catch(Exception e)
+ 			{
+ 				System.out.println(e.toString());
+ 			}
  		}
  		
  		return testObjects;
- 	}*/
+ 	}
  	
  	public static void displayHeader()
  	{
- 		System.out.println("*************************************");
- 		System.out.println("*********                   *********");
- 		System.out.println("********* RAID File Manager *********");
- 		System.out.println("*********                   *********");
- 		System.out.println("*************************************");
+ 		System.out.println("*********************************************");
+ 		System.out.println("***********                       ***********");
+ 		System.out.println("************* RAID File Manager *************");
+ 		System.out.println("***********                       ***********");
+ 		System.out.println("*********************************************");
  	}
  	
  	public static void displayMenu()
@@ -130,11 +139,13 @@
  			System.out.println(tabulate + "Usb Device > "      + i.toString());
  			System.out.println(tabulate + "Path: "             + device.getPathToUSB() + device.getUSBFName());
  			System.out.println(tabulate + "RAID Id: "          + Byte.toString(device.getRaidID()));
- 			System.out.println(tabulate + "RAID Sequence Id: " + Byte.toString(device.getRaidID_Seq()));
+ 			System.out.println(tabulate + "RAID Sequence Id: " + Byte.toString(device.getRaidID_Seq()) + " of " + Byte.toString(device.getNumOfDevicesInConfig()));
  			System.out.println(tabulate + "RAID Type: "        + Codes.getRaidTypeString(device.getRaidType()));
  			
  			++i;
  		}
+ 		
+ 		System.out.println("");
  	}
  	
  	public static void displayRfs(ArrayList<RFS> pRfsList) throws NullPointerException
@@ -162,12 +173,18 @@
 			displayUsbDevices(usbDevList, 1);
  			
  			++i;
+ 			
+ 			// Space between lines
+ 			System.out.println("");
  		}
+ 		
+ 		// Space between lines
+ 		System.out.println("");
  	}
  	
  	public static void handleListUsbDevices()
  	{
- 		// Generate Test Data, uncomment for release
+ 		// Generate Test Data, comment out for release
  		ArrayList<UsbDevice> list = testUsbDevList(5);
  	
  		// Display available usb devices
@@ -176,9 +193,11 @@
  	
  	public static void handleListRfs()
  	{
- 		// Generate Test Data, uncomment for release
+ 		// Generate Test Data, comment out for release
+ 		ArrayList<RFS> list = testRfsList(3);
  		
  		// Display available RFS
+ 		displayRfs(list);
  	}
  	
  	public static String promptForInput(String pSuffix)
@@ -226,8 +245,9 @@
  			
  			result = Codes.RESULT_SUCCESS;
  		}
- 		else if(pInput.compareTo(MAIN_MENU_RAID) == 0)
+ 		else if(pInput.compareTo(MAIN_MENU_RFS) == 0)
  		{
+ 			handleListRfs();
  			
  			result = Codes.RESULT_SUCCESS;
  		}
