@@ -12,15 +12,7 @@
  import java.util.ArrayList;
  
  public class RaidManager
- {	
- 	// Private Members
- 	
-	// Public Methods
-	public RaidManager()
-	{
-	
-	}
-	
+ {		
 	public static ArrayList<RFS> getRfsList(ArrayList<UsbDevice> pUsbDevList)
  	{
             ArrayList<RFS> tempRfs = new ArrayList<RFS>();
@@ -55,12 +47,12 @@
             return tempRfs;
         }
 
-	public ArrayList<UsbDevice> getStorageDevices()
+	public static ArrayList<UsbDevice> getStorageDevices()
 	{
 		return null;
 	}
 	
-	public RFS createRaidConfig(ArrayList<UsbDevice> pUsbDevList, String pLabel, int pType)
+	public static RFS createRaidConfig(ArrayList<UsbDevice> pUsbDevList, String pLabel, int pType)
  	{
  		return null;
  	}

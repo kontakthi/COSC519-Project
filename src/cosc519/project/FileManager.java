@@ -12,7 +12,6 @@
  import cosc519.project.types.RFS;
  import cosc519.project.UsbDevice;
  import cosc519.project.RaidManager;
- import cosc519.project.RaidManagerSingleton;
  import java.util.ArrayList;
  
  public class FileManager
@@ -25,9 +24,9 @@
 	
 	public FileManager()
 	{
-		this.mRaidMgr = RaidManagerSingleton.getInstance();
 		this.refreshAvailableUsbDev();
 		this.refreshAvailableRfs();
+		this.mActiveRfs = null;
 	}
 	
 	//
@@ -79,8 +78,7 @@
  	
  	public void createRaidConfig(ArrayList<UsbDevice> pUsbDevList, String pLabel, int pType)
  	{
- 		RFS temp = new RFS();
- 		temp = this.mRaidMgr.createRaidConfig(pUsbDevList, pLabel, pType);
+ 		RFS temp = RaidManager.createRaidConfig(pUsbDevList, pLabel, pType);
  		
  		// Refresh RFS configs
  		// Refresh USB devices
@@ -89,6 +87,23 @@
  	//
  	// Status Retrieval
  	//////
+ 	public boolean hasRfsContext()
+ 	{
+ 		if(this.mActiveRfs == null)
+ 		{
+ 			return false;
+ 		}
+ 		else
+ 		{
+ 			return true;
+ 		}
+ 	}
+ 	
+ 	public RFS getActiveRfs()
+ 	{
+ 		return this.mActiveRfs;
+ 	}
+ 	
  	public ArrayList<RFS> getAvailableRfs()
  	{
  		return mRfsList;
@@ -101,11 +116,18 @@
  	
  	public void refreshAvailableRfs()
  	{
- 		this.mRfsList = this.mRaidMgr.getRfsList(this.mUsbDevList);
+ 		if(this.mUsbDevList == null)
+ 		{
+ 			System.out.println("No USB devices were found. List is not initialized.");
+ 		}
+ 		else
+ 		{
+ 			this.mRfsList = RaidManager.getRfsList(this.mUsbDevList);
+ 		}
  	}
  	
  	public void refreshAvailableUsbDev()
  	{
-		this.mUsbDevList = this.mRaidMgr.getStorageDevices();
+		this.mUsbDevList = RaidManager.getStorageDevices();
  	}
  }

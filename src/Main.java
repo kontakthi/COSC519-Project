@@ -24,6 +24,9 @@
  	private static final String MAIN_MENU_USB    = "u";
  	private static final String MAIN_MENU_RFS    = "i";
  	private static final String MAIN_MENU_CREATE = "c";
+ 	private static final String MAIN_MENU_FILE   = "f";
+ 	
+ 	private static final String SUB_MENU_QUIT    = "m";
  	
  	private static final String PROMPT_SUFFIX = "?> ";
  	
@@ -115,37 +118,79 @@
  		System.out.println("> List (U)sb Devices");
  		System.out.println("> List (I)nitialized RAID File Systems[RFS]");
  		System.out.println("> (C)reate New RAID File System");
+ 		
+ 		if(gblFileMgr.hasRfsContext())
+ 		{
+ 			System.out.println("> Perform (F)ile Operations on RFS [ID: " + String.format("0x%02X", gblFileMgr.getActiveRfs().getRaidId()) + "]");
+ 		}
+ 		
  		System.out.println("> (Q)uit");
  	}
  	
- 	public static void displayUsbDevices(ArrayList<UsbDevice> pUsbDevList, int tabs) throws NullPointerException
+ 	public static String repeat(String pStr, int pTimes)
+ 	{
+ 		StringBuilder retString = new StringBuilder();
+   		
+   		for(int i = 0; i < pTimes; ++i) 
+   			retString.append(pStr);
+   			
+   		return retString.toString();
+ 	}
+ 	
+ 	public static void displayUsbDevices(ArrayList<UsbDevice> pUsbDevList) throws NullPointerException
  	{
  		if(pUsbDevList == null)
  		{
  			throw new NullPointerException("displayUsbDevices(): the list is null");
  		}
  		
- 		String tabulate = "";
- 		for(int i = 0; i < tabs; ++i)
- 		{	
- 			tabulate += "\t";
- 		}
- 		
  		Integer i = 0;
+ 		
+ 		// Setup table header, labels should have an even number of characters for the sake of simple display
+ 		int tblWidth       = 98;
+ 		String lblTitle    = "USB  Devices";
+ 		String lblIndex    = "  index#  ";
+ 		String lblRaidId   = "   ID   ";
+ 		String lblRaidSeq  = "  Sequence  ";
+ 		String lblRaidType = "    Type    ";
+ 		String lblPath     = "  Path";
+ 		int remWidth       = tblWidth - lblIndex.length() - lblRaidId.length() - lblRaidSeq.length() - lblRaidType.length() - lblPath.length(); // Remaining table width
+ 		lblPath += repeat(" ", tblWidth - remWidth - 2);
+ 		
+ 		
+ 		System.out.format(" " + repeat("_", tblWidth) + " %n");
+ 		System.out.format("|" + repeat(" ", tblWidth) + "|%n");
+ 		System.out.format("|" + repeat(" ", (tblWidth - lblTitle.length()) / 2) + lblTitle + repeat(" ", (tblWidth - lblTitle.length()) / 2) + "|%n");
+ 		System.out.format("|" + repeat("_", tblWidth) + "|%n");
+ 		System.out.format("|" + repeat(" ", lblIndex.length())    +
+ 		                  "|" + repeat(" ", lblRaidId.length())   +
+ 		                  "|" + repeat(" ", lblRaidSeq.length())  +
+ 		                  "|" + repeat(" ", lblRaidType.length()) +
+ 		                  "|" + repeat(" ", lblPath.length())     + "|%n");
+ 		System.out.format("|" +
+ 						  lblIndex    + "|" + 
+ 						  lblRaidId   + "|" +
+ 						  lblRaidSeq  + "|" +
+ 						  lblRaidType + "|" +
+ 						  lblPath     + "|%n");
+ 		System.out.format("|" + repeat("-", lblIndex.length())    +
+ 		                  "|" + repeat("-", lblRaidId.length())   +
+ 		                  "|" + repeat("-", lblRaidSeq.length())  +
+ 		                  "|" + repeat("-", lblRaidType.length()) +
+ 		                  "|" + repeat("-", lblPath.length())     + "|%n");
+ 		
  		for(UsbDevice device: pUsbDevList)
  		{
- 			System.out.println("");
- 		
- 			System.out.println(tabulate + "Usb Device > "      + i.toString());
- 			System.out.println(tabulate + "Path: "             + device.getPathToUSB() + device.getUSBFName());
- 			System.out.println(tabulate + "RAID Id: "          + Byte.toString(device.getRaidID()));
- 			System.out.println(tabulate + "RAID Sequence Id: " + Byte.toString(device.getRaidID_Seq()) + " of " + Byte.toString(device.getNumOfDevicesInConfig()));
- 			System.out.println(tabulate + "RAID Type: "        + Codes.getRaidTypeString(device.getRaidType()));
+ 			System.out.format("|%" + Integer.toString(lblIndex.length()) + "d", i);
+ 			System.out.format("|%" + Integer.toString(lblRaidId.length()) + "X", device.getRaidID());
+ 			System.out.format("|%" + Integer.toString(lblRaidSeq.length()) + "d", device.getRaidID_Seq());
+ 			System.out.format("|"  + repeat(" ", lblRaidType.length() - Codes.getRaidTypeString(device.getRaidType()).length()) + Codes.getRaidTypeString(device.getRaidType()));
+ 			System.out.format("|"  + device.getPathToUSB() + device.getUSBFName() + repeat(" ", lblPath.length() - (device.getPathToUSB() + device.getUSBFName()).length()) + "|%n");
  			
  			++i;
  		}
  		
- 		System.out.println("");
+ 		System.out.format("-" + repeat("-", tblWidth) + "-%n");
  	}
  	
  	public static void displayRfs(ArrayList<RFS> pRfsList) throws NullPointerException
@@ -159,45 +204,77 @@
  		
  		for(RFS rfs: pRfsList)
  		{
- 			System.out.println("");
- 		
  			System.out.println("RFS > "             + i.toString());
- 			System.out.println("RAID Id: "          + Byte.toString(rfs.getRaidId()));
- 			System.out.println("RAID Type: "        + Codes.getRaidTypeString(rfs.getRaidType()));
- 			System.out.println("RFS State: "        + Codes.getRfsStatusString(rfs.isComplete()));
+ 			System.out.println("RAID Id:        "   + String.format("0x%02X", rfs.getRaidId()));
+ 			System.out.println("RAID Type:      "   + Codes.getRaidTypeString(rfs.getRaidType()));
+ 			System.out.println("RFS State:      "   + Codes.getRfsStatusString(rfs.isComplete()));
  			System.out.println("Num of Members: "   + Byte.toString(rfs.getMemberCount()));
- 			System.out.println("USB Devices:");
  			
  			// List usb devices belonging to this RFS
  			ArrayList<UsbDevice> usbDevList = rfs.getUsbDevList();
-			displayUsbDevices(usbDevList, 1);
+			displayUsbDevices(usbDevList);
  			
  			++i;
- 			
- 			// Space between lines
- 			System.out.println("");
  		}
- 		
- 		// Space between lines
- 		System.out.println("");
  	}
  	
  	public static void handleListUsbDevices()
  	{
- 		// Generate Test Data, comment out for release
+ 		// Generate Test Data, comment out for release, replace with retrieveUsbDeviceList function
  		ArrayList<UsbDevice> list = testUsbDevList(5);
  	
  		// Display available usb devices
- 		displayUsbDevices(list, 0);
+ 		displayUsbDevices(list);
  	}
  	
  	public static void handleListRfs()
  	{
- 		// Generate Test Data, comment out for release
+ 		// Generate Test Data, comment out for release, replace with retrieveRfsList function
  		ArrayList<RFS> list = testRfsList(3);
  		
  		// Display available RFS
  		displayRfs(list);
+ 		
+ 		// Choose a target RFS
+ 		System.out.println("Please choose a valid RFS index or type 'm' to return to main menu...");
+ 		String input;
+ 		while(true)
+ 		{
+ 			input = promptForInput(PROMPT_SUFFIX);
+ 			
+ 			// Normalize input
+ 			input = input.trim();
+ 			input = input.toLowerCase();
+ 			
+ 			if(input.compareTo(SUB_MENU_QUIT) == 0)
+ 			{
+ 				// We are quitting, break loop
+ 				break;
+ 			}
+ 			else
+ 			{
+ 				// We have input, attempt to specify target RFS
+ 				try
+ 				{
+ 					Integer rfsIndex = Integer.parseInt(input);
+ 					
+ 					if((rfsIndex + 1) > list.size() || rfsIndex < 0)
+ 					{
+ 						System.out.println("The index provided is out of range. Try again.");
+ 					}
+ 					else
+ 					{
+ 						gblFileMgr.setRfsContext(list.get(rfsIndex));
+ 						System.out.println("Active RFS has been set to RFS ID " + String.format("0x%02X", list.get(rfsIndex).getRaidId()) + "\n");
+ 						break;
+ 					}
+ 				}
+ 				catch(Exception e) // Probably a NumberFormatException
+ 				{
+ 					System.out.println("The index provided is invalid. Try again.");
+ 				}		
+ 			}
+ 		}
  	}
  	
  	public static String promptForInput(String pSuffix)
@@ -256,6 +333,11 @@
  			
  			result = Codes.RESULT_SUCCESS;
  		}
+ 		else if(pInput.compareTo(MAIN_MENU_FILE) == 0 && gblFileMgr.hasRfsContext())
+ 		{
+ 			
+ 			result = Codes.RESULT_SUCCESS;
+ 		}
  		else
  		{
  			result = Codes.RESULT_UNKNOWN;
@@ -298,6 +380,7 @@
  			// Check for quit
  			if(result == Codes.RESULT_QUIT)
  			{
+ 				System.out.println("Good Bye");
  				break;	
  			}
 		}

@@ -63,7 +63,7 @@
 		// Init raidid with first usbdevice
 		byte raidId = pUsbDevList.get(0).getRaidID();
 		
-		// Iterate through usb device list to check if eash is formatted
+		// Iterate through usb device list to check if each is formatted
 		// uncomment for release
 		/*for(int i = 0; i < pUsbDevList.size(); ++i)
 		{
