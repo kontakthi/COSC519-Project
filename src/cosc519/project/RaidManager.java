@@ -52,8 +52,24 @@
 		return null;
 	}
 	
-	public static RFS createRaidConfig(ArrayList<UsbDevice> pUsbDevList, String pLabel, int pType)
+	public static RFS createRaidConfig(ArrayList<UsbDevice> pUsbDevList, byte pLabel, byte pType)
  	{
- 		return null;
+            RFS newRfs = null;
+            ArrayList<UsbDevice> tempUsb = new ArrayList<UsbDevice>();
+            for (int i = 0; i < pUsbDevList.size(); i++){
+                tempUsb.add(i, new UsbDevice(pUsbDevList.get(i).getPathToUSB(), "RFS", pLabel, 
+                (byte) pUsbDevList.size(), (byte) i, pType));
+                newRfs.formatFile(tempUsb.get(i));
+            }
+            try{
+                newRfs = new RFS(tempUsb);
+            }
+            catch (NullPointerException e){
+                e.printStackTrace();
+            }
+            catch (IllegalAccessException e){
+                e.printStackTrace();
+            }                
+            return newRfs;
  	}
  }
