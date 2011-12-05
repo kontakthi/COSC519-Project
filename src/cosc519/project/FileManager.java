@@ -76,7 +76,7 @@
  		this.mActiveRfs = pTargetRfs;
  	}
  	
- 	public void createRaidConfig(ArrayList<UsbDevice> pUsbDevList, String pLabel, int pType)
+ 	public void createRaidConfig(ArrayList<UsbDevice> pUsbDevList, byte pLabel, byte pType)
  	{
  		RFS temp = RaidManager.createRaidConfig(pUsbDevList, pLabel, pType);
  		
