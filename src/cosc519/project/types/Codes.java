@@ -37,8 +37,10 @@
  	// OS Specific Paths
  	public static final String PATH_MAC = "/Volumes";
  	public static final String PATH_LINUX = "/media";
+ 	public static final String RFS_FILENAME = "rfs.bin";
  	
  	// Size Definitions
+ 	public static final int RFS_DEVICE_MIN = 2;
  	public static final int DATA_SIZE = 8388608;  // in bytes
 	public static final int BLOCK_SIZE = 512; // in bytes
 	public static final int META_DATA_SIZE = 23; // in bytes

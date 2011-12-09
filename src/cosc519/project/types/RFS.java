@@ -117,16 +117,9 @@
 	public ArrayList<UsbDevice> getUsbDevList()
 	{
 		return this.mUsbDevList;
-	}
-        
-    private void setCompleteState()
-    {
-        if (this.mUsbDevList.size() == this.mRaidMemberCount)
-            this.mIsComplete = true;
-        else // Need to check if size of usbdev list might be greater than the intended member count
-            this.mIsComplete = false;
-    }        
+	}     
 	
+	// Public Methods
 	public boolean isComplete()
 	{
 		return this.mIsComplete;
@@ -138,7 +131,6 @@
         setCompleteState();
     }
 	
-	// Public Methods
 	public ArrayList<File> getListOfFiles()
 	{
 		return null;
@@ -223,4 +215,13 @@
            System.out.println ("Exception = " + e );
         }
     }
+    
+    // Private Methods
+    private void setCompleteState()
+    {
+        if (this.mUsbDevList.size() == this.mRaidMemberCount)
+            this.mIsComplete = true;
+        else // Need to check if size of usbdev list might be greater than the intended member count
+            this.mIsComplete = false;
+    }   
  }

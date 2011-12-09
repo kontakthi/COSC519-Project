@@ -18,7 +18,6 @@
  {
 	// Private Members
 	private RFS mActiveRfs;
-	private RaidManager mRaidMgr;
 	private ArrayList<UsbDevice> mUsbDevList;
 	private ArrayList<RFS> mRfsList;
 	
