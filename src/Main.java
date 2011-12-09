@@ -26,6 +26,9 @@
  	private static final String MAIN_MENU_CREATE = "c";
  	private static final String MAIN_MENU_FILE   = "f";
  	
+ 	private static final String SUB_MENU_LIST    = "l";
+ 	private static final String SUB_MENU_READ    = "r";
+ 	private static final String SUB_MENU_WRITE   = "w";
  	private static final String SUB_MENU_QUIT    = "m";
  	
  	private static final String PROMPT_SUFFIX = "?> ";
@@ -469,12 +472,74 @@
  			System.out.println("Creating RAID configuration. Please wait...");
  			
  			// Create RAID configuration
+ 			// RaidManager.CreateRaid(...);
  			
  			System.out.println("RAID configuration complete. New RFS ID: " + raidId.toString());
  		}
  		else
  		{
  			System.out.println("User has canceled. Returning to main menu...");
+ 		}
+ 	}
+ 	
+ 	public static void displayFileOpsSubMenu()
+ 	{
+ 		RFS targetRfs = gblFileMgr.getActiveRfs();
+ 		
+ 		System.out.format("Active RFS: 0x%2X\n", targetRfs.getRaidId());
+ 		System.out.println("Please make a selection below.");
+ 		System.out.println("> (L)ist files in RFS");
+ 		System.out.println("> (R)ead file on RFS");
+ 		System.out.println("> (W)rite file to RFS");
+ 		System.out.println("> Return to (M)ain Menu");
+ 	}
+ 	
+ 	public static void handleFileOps()
+ 	{
+ 		String input = "";
+ 		
+ 		while(true)
+ 		{
+ 			displayFileOpsSubMenu();
+ 			
+ 			while(input.compareTo("") == 0)
+ 			{
+ 				input = promptForInput(PROMPT_SUFFIX);
+ 			}
+ 			
+ 			clearScreen(500);
+ 			
+ 			if(input.trim().toLowerCase().compareTo(SUB_MENU_QUIT) == 0)
+ 			{
+ 				System.out.println("Returning to main menu...");
+ 				break;
+ 			}
+ 			else if(input.trim().toLowerCase().compareTo(SUB_MENU_LIST) == 0)
+ 			{
+ 				// Call list files function
+ 			}
+ 			else if(input.trim().toLowerCase().compareTo(SUB_MENU_READ) == 0)
+ 			{	
+ 				// Retrieve list of file
+ 				
+ 				// Prompt for user input of filename index from list
+ 				
+ 				// Call current rfs.read function
+ 				
+ 				// Save file locally
+ 			}
+ 			else if(input.trim().toLowerCase().compareTo(SUB_MENU_WRITE) == 0)
+ 			{
+ 				// Prompt for user input of filename to write
+ 				
+ 				// Call current gblFileMgr.getActiveRfs().write() function
+ 			}
+ 			else
+ 			{
+ 				System.out.println("Input invalid. Try again.");
+ 			}
+ 			
+ 			input = "";
  		}
  	}
  	
@@ -537,6 +602,7 @@
  		}
  		else if(pInput.compareTo(MAIN_MENU_FILE) == 0 && gblFileMgr.hasRfsContext())
  		{
+ 			handleFileOps();
  			
  			result = Codes.RESULT_SUCCESS;
  		}
@@ -550,7 +616,7 @@
  	
  	public static void clearScreen(int lines)
  	{
- 		if(lines < 0)
+ 		if(lines <= 0)
  		{
  			return;
  		}
