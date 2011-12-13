@@ -38,6 +38,7 @@
  	public static final String PATH_MAC = "/Volumes";
  	public static final String PATH_LINUX = "/media";
  	public static final String RFS_FILENAME = "rfs.bin";
+ 	public static final String MAC_FILE_EXCLUSION_1 = PATH_MAC + "/Macintosh HD";
  	
  	// Size Definitions
  	public static final int RFS_DEVICE_MIN = 2;

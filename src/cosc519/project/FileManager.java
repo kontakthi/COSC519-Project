@@ -81,6 +81,8 @@
  		
  		// Refresh RFS configs
  		// Refresh USB devices
+ 		this.refreshAvailableUsbDev();
+		this.refreshAvailableRfs();
  	}
  	
  	//

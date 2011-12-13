@@ -11,6 +11,8 @@
  import java.io.RandomAccessFile;
  import java.io.FileInputStream;
  import java.io.IOException;
+ import java.io.FileNotFoundException;
+ 
  import java.util.*;
  import cosc519.project.types.Codes;
  import cosc519.project.types.File;
@@ -60,6 +62,37 @@
         this.raidID_Seq = raidID_Seq;
         this.raidType = raidType;
         this.isFormatted = new java.io.File(pathToUSB + USBFName).exists();
+    }
+    
+    // Use to initialize a UsbDevice that is formatted or unformatted from either an existant or nonexistant rfs.bin file
+    // pathToUsb = absolute path of the usb device only, not including the RFS filename
+    public UsbDevice(String pathToUsb)
+    {
+    	// Check if file exists
+    	java.io.File rfsFile = new java.io.File(pathToUsb, Codes.RFS_FILENAME);
+    	
+    	if(rfsFile.exists()) 
+    	{
+    		// Initialize UsbDevice class from filesystem file
+    		try
+    		{
+    			this.initMetaData(pathToUsb);
+    		
+    			this.WORKING_DIRECTORY = pathToUsb;
+    			this.FORMATTED_FILE_DEST = Codes.RFS_FILENAME;
+    			this.isFormatted = true;
+    		}
+    		catch(Exception e)
+    		{
+    			System.out.println("Error initializing UsbDevice. Do not use!");
+    		}
+    	}
+    	else
+    	{
+    		this.WORKING_DIRECTORY = pathToUsb;
+    		this.FORMATTED_FILE_DEST = Codes.RFS_FILENAME;
+    		this.isFormatted = false;
+    	}
     }
     
     // Return RAID ID (label)
@@ -542,7 +575,7 @@
                         // seek to location of data
                         raf.seek(byteArrayToInt(dataLocation, 3));
                         raf.readFully(buffer = new byte[byteArrayToInt(dataLocationBlockSize,3) * Codes.BLOCK_SIZE], 0, byteArrayToInt(dataLocationBlockSize, 3) * Codes.BLOCK_SIZE);
-                        //System.out.println("I created a buffer that is " + ((buffer.length / Codes.BLOCK_SIZE)) + " blocks long.");
+                        System.out.println("I created a buffer that is " + ((buffer.length / Codes.BLOCK_SIZE)) + " blocks long.");
                         
                         // write empty bytes to data location
                         raf.seek(byteArrayToInt(dataLocation,3));
@@ -660,11 +693,7 @@
                     
                     // Zeroes out the FAT Block
                     FATBlock = FATBlockEmpty;
-                    
-                // Break early if you've reached a FAT entry without data.
-                // 0x1E is and always should be the first new FAT entry
-                } else if (permFile == (byte) 0x1E)
-                    break;
+                }
             }
             
             raf.close();
@@ -844,5 +873,35 @@
         } catch (Exception e) {}
         
         return s;
+    }
+    
+    // Provides a clear way to read metadata from the filesystem
+    // residing on the USB device.
+    private void initMetaData(String pathToUsb) throws FileNotFoundException, IOException
+    {
+    	java.io.File rfsFile = new java.io.File(pathToUsb, Codes.RFS_FILENAME);	
+    	RandomAccessFile raf = new RandomAccessFile(rfsFile, "rw");
+    	
+    	// Seek the beginning of the file
+    	raf.seek(0);
+    	
+    	// Read in entire metadata block
+    	byte[] metaDataBlock = new byte[Codes.META_DATA_SIZE];
+    	int retVal = raf.read(metaDataBlock);
+    	
+    	// Save meta data to object
+    	if(retVal != -1)
+    	{
+    		this.raidID                    = metaDataBlock[0];
+    		this.raid_numOfDevicesInConfig = metaDataBlock[1];
+    		this.raidID_Seq                = metaDataBlock[2];
+    		this.raidType                  = metaDataBlock[3];
+    	}
+    	else
+    	{
+    		throw new IOException("Opened file but could not retrieve metadata block.");
+    	}
+    	
+    	raf.close();
     }
  }

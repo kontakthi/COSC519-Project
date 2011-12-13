@@ -33,7 +33,7 @@
 	{
 		if(pUsbDev == null)
 		{
-			throw new NullPointerException("RFS(): USB device argument is null. WTF mate?!");
+			throw new NullPointerException("RFS(): USB device argument is null.");
 		}
 		
 		if(pUsbDev.getFormatStatus())
@@ -65,7 +65,7 @@
 		
 		// Iterate through usb device list to check if each is formatted
 		// uncomment for release
-		/*for(int i = 0; i < pUsbDevList.size(); ++i)
+		for(int i = 0; i < pUsbDevList.size(); ++i)
 		{
 			if(pUsbDevList.get(i).getFormatStatus() == false)
 			{
@@ -80,7 +80,7 @@
 			{
 				raidId = pUsbDevList.get(i).getRaidID();
 			}
-		}*/
+		}
 		
 		// Passed checks, initialize the RFS object
 		this.mRaidType        = pUsbDevList.get(0).getRaidType();

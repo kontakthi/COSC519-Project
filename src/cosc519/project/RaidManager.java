@@ -9,7 +9,10 @@
  package cosc519.project;
  
  import cosc519.project.types.RFS;
+ import cosc519.project.types.Codes;
+ import cosc519.project.UsbDevice;
  import java.util.ArrayList;
+ import java.io.File;
  
  public class RaidManager
  {		
@@ -49,7 +52,23 @@
 
 	public static ArrayList<UsbDevice> getStorageDevices()
 	{
-		return null;
+		ArrayList<UsbDevice> devList     = new ArrayList<UsbDevice>();
+		File                 volumesPath = new File(Codes.PATH_MAC);
+		File[]               files       = volumesPath.listFiles();
+		
+		for(File file : files)
+		{
+			if(file.toString().compareTo(Codes.MAC_FILE_EXCLUSION_1) == 0)
+			{
+				continue; // Skip hard drive
+			}
+			else
+			{
+				devList.add(new UsbDevice(file.toString())); // Add usb drive
+			}
+		}
+		
+		return devList;
 	}
 	
 	public static RFS createRaidConfig(ArrayList<UsbDevice> pUsbDevList, byte pLabel, byte pType)

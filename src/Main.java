@@ -8,6 +8,7 @@
  
  import cosc519.project.FileManager;
  import cosc519.project.FileManagerSingleton;
+ import cosc519.project.RaidManager;
  import cosc519.project.UsbDevice;
  import cosc519.project.types.Codes;
  import cosc519.project.types.RFS;
@@ -193,7 +194,7 @@
  			System.out.format("|%" + Integer.toString(lblRaidId.length()) + "X", device.getRaidID());
  			System.out.format("|%" + Integer.toString(lblRaidSeq.length()) + "d", device.getRaidID_Seq());
  			System.out.format("|"  + repeat(" ", lblRaidType.length() - Codes.getRaidTypeString(device.getRaidType()).length()) + Codes.getRaidTypeString(device.getRaidType()));
- 			System.out.format("|"  + device.getPathToUSB() + device.getUSBFName() + repeat(" ", lblPath.length() - (device.getPathToUSB() + device.getUSBFName()).length()) + "|%n");
+ 			System.out.format("|"  + device.getPathToUSB() + "/" + device.getUSBFName() + repeat(" ", lblPath.length() - (device.getPathToUSB() + device.getUSBFName()).length() + 1) + "|%n");
  			
  			++i;
  		}
@@ -229,7 +230,8 @@
  	public static void handleListUsbDevices()
  	{
  		// Generate Test Data, comment out for release, replace with retrieveUsbDeviceList function
- 		ArrayList<UsbDevice> list = testUsbDevList(5);
+ 		//ArrayList<UsbDevice> list = testUsbDevList(5);
+ 		ArrayList<UsbDevice> list = gblFileMgr.getAvailableUsbDev();
  	
  		// Display available usb devices
  		displayUsbDevices(list);
@@ -238,10 +240,19 @@
  	public static void handleListRfs()
  	{
  		// Generate Test Data, comment out for release, replace with retrieveRfsList function
- 		ArrayList<RFS> list = testRfsList(3);
+ 		//ArrayList<RFS> list = testRfsList(3);
+ 		ArrayList<RFS> list = gblFileMgr.getAvailableRfs();
  		
  		// Display available RFS
- 		displayRfs(list);
+ 		if(list.size() > 0)
+ 		{
+ 			displayRfs(list);
+ 		}
+ 		else
+ 		{
+ 			System.out.println("No RFS configurations were found.");
+ 			return;
+ 		}
  		
  		// Choose a target RFS
  		System.out.println("Please choose a valid RFS index or type 'm' to return to main menu...");
@@ -472,9 +483,9 @@
  			System.out.println("Creating RAID configuration. Please wait...");
  			
  			// Create RAID configuration
- 			// RaidManager.CreateRaid(...);
+ 			// RFS newRfs = RaidManager.CreateRaidConfig(...);
  			
- 			System.out.println("RAID configuration complete. New RFS ID: " + raidId.toString());
+ 			System.out.println("RAID configuration complete. New RFS ID: " + raidId.toString()); // Should get raid id from new RFS as a sanity check
  		}
  		else
  		{
