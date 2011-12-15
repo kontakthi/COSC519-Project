@@ -75,18 +75,22 @@
  	{
             RFS newRfs = null;
             ArrayList<UsbDevice> tempUsb = new ArrayList<UsbDevice>();
-            for (int i = 0; i < pUsbDevList.size(); i++){
-                tempUsb.add(i, new UsbDevice(pUsbDevList.get(i).getPathToUSB(), "RFS", pLabel, 
+            for (int i = 0; i < pUsbDevList.size(); i++)
+            {
+                tempUsb.add(i, new UsbDevice(pUsbDevList.get(i).getPathToUSB(), Codes.RFS_FILENAME, pLabel, 
                 (byte) pUsbDevList.size(), (byte) i, pType));
                 newRfs.formatFile(tempUsb.get(i));
             }
-            try{
+            try
+            {
                 newRfs = new RFS(tempUsb);
             }
-            catch (NullPointerException e){
+            catch (NullPointerException e)
+            {
                 e.printStackTrace();
             }
-            catch (IllegalAccessException e){
+            catch (IllegalAccessException e)
+            {
                 e.printStackTrace();
             }                
             return newRfs;

@@ -23,8 +23,7 @@
     // Method for mirroring ONLY
     // Takes string path of file and the filename (C:/ + filename.ext)
     public File(String pathToFile, String fileName) {        
-        
-        this.fileObj = new java.io.File(pathToFile + fileName);        
+        this.fileObj = new java.io.File(pathToFile + "/" + fileName);        
         this.pathToFile = pathToFile;
         this.fileName = fileName;
         
@@ -57,7 +56,7 @@
      */
     public File(String pathToFile, String fileName, int sequenceInFileSeries, int startByte, int len) {    
         
-        this.fileObj = new java.io.File(pathToFile + fileName);        
+        this.fileObj = new java.io.File(pathToFile + "/" + fileName);        
         this.pathToFile = pathToFile;
         this.fileName = fileName;
         this.sequenceInFileSeries = sequenceInFileSeries;
@@ -66,11 +65,26 @@
         try {
             RandomAccessFile raf = new RandomAccessFile(this.fileObj, "rw");
             
-            System.out.println(this.dataStream.length);
-            raf.read(this.dataStream, startByte, len);
+            //System.out.println(this.dataStream.length);
+            //System.out.println("raf read at " + Integer.toString(startByte) + " for length " + Integer.toString(len));
+            raf.seek(startByte);
+            for(int j = 0; j < Codes.BLOCK_SIZE; j++)
+            	this.dataStream[j] = raf.readByte();
+            //raf.read(this.dataStream, startByte, len);
+            
+            //System.out.println(this.dataStream.length);
+            //for(int i = 0; i < this.dataStream.length; ++i)
+            //{
+            //	System.out.format("%02X", this.dataStream[i]);
+            //}
+            //System.out.println();
             
             raf.close();
-        } catch (Exception e) {}
+        } 
+        catch (Exception e) 
+        {
+        	e.printStackTrace();
+        }
     }
     
     public String getFName() {

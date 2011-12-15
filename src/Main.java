@@ -28,7 +28,7 @@
  	private static final String MAIN_MENU_FILE   = "f";
  	
  	private static final String SUB_MENU_LIST    = "l";
- 	private static final String SUB_MENU_READ    = "r";
+ 	private static final String SUB_MENU_DELETE  = "d";
  	private static final String SUB_MENU_WRITE   = "w";
  	private static final String SUB_MENU_QUIT    = "m";
  	
@@ -189,12 +189,24 @@
  		
  		for(UsbDevice device: pUsbDevList)
  		{
- 			System.out.format("|%" + Integer.toString(lblIndex.length()) + "d", i);
- 			System.out.format("|"  + repeat(" ", lblFormatted.length() - Boolean.toString(device.getFormatStatus()).length()) + Boolean.toString(device.getFormatStatus()));
- 			System.out.format("|%" + Integer.toString(lblRaidId.length()) + "X", device.getRaidID());
- 			System.out.format("|%" + Integer.toString(lblRaidSeq.length()) + "d", device.getRaidID_Seq());
- 			System.out.format("|"  + repeat(" ", lblRaidType.length() - Codes.getRaidTypeString(device.getRaidType()).length()) + Codes.getRaidTypeString(device.getRaidType()));
- 			System.out.format("|"  + device.getPathToUSB() + "/" + device.getUSBFName() + repeat(" ", lblPath.length() - (device.getPathToUSB() + device.getUSBFName()).length() + 1) + "|%n");
+ 			if(device.getFormatStatus())
+ 			{
+ 				System.out.format("|%" + Integer.toString(lblIndex.length()) + "d", i);
+ 				System.out.format("|"  + repeat(" ", lblFormatted.length() - Boolean.toString(device.getFormatStatus()).length()) + Boolean.toString(device.getFormatStatus()));
+ 				System.out.format("|%" + Integer.toString(lblRaidId.length()) + "X", device.getRaidID());
+ 				System.out.format("|%" + Integer.toString(lblRaidSeq.length()) + "d", device.getRaidID_Seq());
+ 				System.out.format("|"  + repeat(" ", lblRaidType.length() - Codes.getRaidTypeString(device.getRaidType()).length()) + Codes.getRaidTypeString(device.getRaidType()));
+ 				System.out.format("|"  + device.getPathToUSB() + "/" + device.getUSBFName() + repeat(" ", lblPath.length() - (device.getPathToUSB() + device.getUSBFName()).length() - 1) + "|%n"); // - 1 b/c of the added front slash
+ 			}
+ 			else
+ 			{
+ 				System.out.format("|%" + Integer.toString(lblIndex.length()) + "d", i);
+ 				System.out.format("|"  + repeat(" ", lblFormatted.length() - Boolean.toString(device.getFormatStatus()).length()) + Boolean.toString(device.getFormatStatus()));
+ 				System.out.format("|"  + repeat(" ", lblRaidId.length()));
+ 				System.out.format("|"  + repeat(" ", lblRaidSeq.length()));
+ 				System.out.format("|"  + repeat(" ", lblRaidType.length()));
+ 				System.out.format("|"  + device.getPathToUSB() + repeat(" ", lblPath.length() - device.getPathToUSB().length()) + "|%n");
+ 			}
  			
  			++i;
  		}
@@ -304,7 +316,8 @@
  		// Retrieve usb devices
  		//ArrayList<UsbDevice> usbDevList = gblFileMgr.getAvailableUsbDev();
  		// For now populate with test list
- 		ArrayList<UsbDevice> usbDevList = testUsbDevList(8);
+ 		//ArrayList<UsbDevice> usbDevList = testUsbDevList(8);
+ 		ArrayList<UsbDevice> usbDevList = gblFileMgr.getAvailableUsbDev();
  		ArrayList<UsbDevice> targetUsbDevList = new ArrayList<UsbDevice>();
  		
  		// List and instruct user to select available usb devices
@@ -469,7 +482,7 @@
  		
  		displayUsbDevices(targetUsbDevList);
  		
- 		System.out.println("RAID ID: " + raidId.toString());
+ 		System.out.format("RAID ID: %02X\n", raidId);
  		System.out.println("RAID type: " + raidType.toString() + "(" + Codes.getRaidTypeString(raidType) + ")");
  		System.out.println("IF YOU ARE SATISFIED ENTER \"Y\" OR ANY OTHER KEY TO CANCEL");
  		
@@ -483,9 +496,9 @@
  			System.out.println("Creating RAID configuration. Please wait...");
  			
  			// Create RAID configuration
- 			// RFS newRfs = RaidManager.CreateRaidConfig(...);
+ 			RFS newRfs = gblFileMgr.createRaidConfig(targetUsbDevList, raidId, raidType);
  			
- 			System.out.println("RAID configuration complete. New RFS ID: " + raidId.toString()); // Should get raid id from new RFS as a sanity check
+ 			System.out.format("RAID configuration complete. New RFS ID: %02X\n", raidId);
  		}
  		else
  		{
@@ -500,7 +513,7 @@
  		System.out.format("Active RFS: 0x%2X\n", targetRfs.getRaidId());
  		System.out.println("Please make a selection below.");
  		System.out.println("> (L)ist files in RFS");
- 		System.out.println("> (R)ead file on RFS");
+ 		System.out.println("> (D)elete file on RFS");
  		System.out.println("> (W)rite file to RFS");
  		System.out.println("> Return to (M)ain Menu");
  	}
@@ -528,22 +541,33 @@
  			else if(input.trim().toLowerCase().compareTo(SUB_MENU_LIST) == 0)
  			{
  				// Call list files function
+ 				gblFileMgr.getActiveRfs().getUsbDevList().get(0).listFiles();
+ 				
  			}
- 			else if(input.trim().toLowerCase().compareTo(SUB_MENU_READ) == 0)
- 			{	
- 				// Retrieve list of file
- 				
- 				// Prompt for user input of filename index from list
- 				
- 				// Call current rfs.read function
- 				
- 				// Save file locally
- 			}
- 			else if(input.trim().toLowerCase().compareTo(SUB_MENU_WRITE) == 0)
+ 			/*else if(input.trim().toLowerCase().compareTo(SUB_MENU_DELETE) == 0)
  			{
  				// Prompt for user input of filename to write
+ 				input ="";
  				
- 				// Call current gblFileMgr.getActiveRfs().write() function
+ 				while(input.compareTo("") == 0)
+ 				{
+ 					input = promptForInput("Specify the file to delete > ");
+ 				}
+ 				
+ 				gblFileMgr.getActiveRfs().delete(input);
+ 			}*/
+ 			else if(input.trim().toLowerCase().compareTo(SUB_MENU_WRITE) == 0)
+ 			{
+ 				input = "";
+ 				
+ 				// Prompt for user input of filename to write
+ 				while(input.compareTo("") == 0)
+ 				{
+ 					input = promptForInput("Specify the file to write > ");
+ 				}
+ 				
+ 				// Call current gblFileMgr.saveFile function
+ 				gblFileMgr.saveFile(input);
  			}
  			else
  			{

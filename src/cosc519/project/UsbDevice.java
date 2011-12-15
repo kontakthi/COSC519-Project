@@ -245,9 +245,15 @@
         // Only add the file if the file does NOT exist
         if (!(fileExists))
             try {
-                FileInputStream in = new FileInputStream(newFile.getFileObj());
-                in.read(data);
-                in.close();
+            	//for(int i = 0; i < newFile.getByteStream().length; ++i)
+            	//	System.out.format("%02X", newFile.getByteStream()[i]);
+            	//System.out.println("FILE DID NOT EXIST!");   
+            	
+            	if(this.raidType == (byte) 0x01) {
+                	FileInputStream in = new FileInputStream(newFile.getFileObj());
+                	in.read(data);
+                	in.close();
+                }
 
                 RandomAccessFile raf = new RandomAccessFile(file.getFileObj(), "rw");
 
@@ -706,20 +712,20 @@
                     fileNum = -1;
 
                     System.out.println();
-                    System.out.print("Enter the file # to delete (<= -1 to exit): ");
+                    System.out.print("(<= -1 to exit): ");
 
                     fileNum = in.nextInt();
 
                     if (fileNum <= -1)
-                        System.out.println("No files deleted.");
-                    else if(fileNum > fileCounter) {
+                        System.out.println("Returning to Main Menu.");
+                    /*else if(fileNum > fileCounter) {
                         System.out.println("File does not exist");
                         fileNum = -1;
                     } else if(fileNum >= 0 && fileNum <= fileCounter) {
                         // Passes the filename string based on fileCounter index selection
                         // Stores it to the variable fileNameToDelete that is then returned to RFS
                         deleteFile(fileNameToDelete = listOfFileNames.get(fileNum));
-                    }
+                    }*/
 
                 } catch (InputMismatchException e) {
                     System.err.println(e.getMessage());

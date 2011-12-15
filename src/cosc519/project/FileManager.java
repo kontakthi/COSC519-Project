@@ -35,10 +35,12 @@
  	// Saves a file to a given RAID volume.
  	// Utilizes the active RFS object to write a file to
  	// the RAID volume.
- 	public int saveFile(File pFileObj)
+ 	public int saveFile(String path)
  	{
  		int result = Codes.RESULT_SUCCESS;
- 	
+ 		
+ 		this.mActiveRfs.write(path);
+ 		
  		return result;
  	}
  	
@@ -54,18 +56,18 @@
  	
  	// Retrieves a file from a given RAID config and saves onto
  	// host computer
- 	public int retrieveFile(String file)
+ 	/*public int retrieveFile(String file)
  	{
  		int result = Codes.RESULT_SUCCESS;
  	
  		return result;
- 	}
+ 	}*/
  	
  	// Retrieves all files on a given RFS
- 	public ArrayList<File> retrieveAllFiles()
+ 	/*public ArrayList<File> retrieveAllFiles()
  	{
  		return this.mActiveRfs.getListOfFiles();
- 	}
+ 	}*/
  	
  	//
  	// Initialization
@@ -75,7 +77,7 @@
  		this.mActiveRfs = pTargetRfs;
  	}
  	
- 	public void createRaidConfig(ArrayList<UsbDevice> pUsbDevList, byte pLabel, byte pType)
+ 	public RFS createRaidConfig(ArrayList<UsbDevice> pUsbDevList, byte pLabel, byte pType)
  	{
  		RFS temp = RaidManager.createRaidConfig(pUsbDevList, pLabel, pType);
  		
@@ -83,6 +85,8 @@
  		// Refresh USB devices
  		this.refreshAvailableUsbDev();
 		this.refreshAvailableRfs();
+		
+		return temp;
  	}
  	
  	//

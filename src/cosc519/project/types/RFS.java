@@ -136,19 +136,59 @@
 		return null;
 	}
 	
-	public void write(File file)
+	public void write(String path)
 	{
+		// Open new java.io.File object
+		java.io.File tempFile = new java.io.File(path);
 		
+		// Iterate through usbdevices and stripe if striping otherwise mirroring
+		if(this.mRaidType == Codes.TYPE_RAID_0_STRIPPING)
+		{
+			int startByte = 0;
+			for(int i = 0; i < (tempFile.length() / Codes.BLOCK_SIZE); i++)
+			{
+				System.out.println("startbyte =" + startByte);
+				System.out.println("filesize = " + Long.toString(tempFile.length()));
+				System.out.println("blks = " + Long.toString(tempFile.length() / Codes.BLOCK_SIZE)); 
+				System.out.println("mod = " + Integer.toString(i % this.mUsbDevList.size()));
+				System.out.println("raidsequence = " + Byte.toString(this.mUsbDevList.get(i % this.mUsbDevList.size()).getRaidID_Seq()));
+				
+				File f = null;
+				
+				this.mUsbDevList.get(i % this.mUsbDevList.size()).addFile(
+					f = new File(tempFile.getParent(), tempFile.getName(), i, startByte, Codes.BLOCK_SIZE) 
+				);
+				
+				
+				
+				System.out.println("offset = " + Integer.toString(startByte));
+				startByte += Codes.BLOCK_SIZE;
+			}
+		}
+		else
+		{
+			for(int i = 0; i < mUsbDevList.size(); ++i)
+			{
+				this.mUsbDevList.get(i).addFile(
+					new File(tempFile.getParent(), tempFile.getName())
+				);
+			}
+		}
 	}
 	
-	public File read(String filename)
-	{
-		return null;
-	}
+	//public File read(String filename)
+	//{
+	//	return null;
+	//}
 	
 	public void delete(String filename)
 	{
-	
+        for(int i = 0; i < mUsbDevList.size(); ++i)
+        {
+            //array of usb devices
+            //device(i) call deleteFile(filename)
+            this.mUsbDevList.get(i).deleteFile(filename);
+        }
 	}
 	
 	public static void formatFile (UsbDevice device) 
@@ -195,7 +235,8 @@
         try {
 
           // Create an output stream to the file.
-          FileOutputStream file_output = new FileOutputStream (new java.io.File(device.getPathToUSB() + device.getUSBFName()));
+          System.out.println("Creating RFS file in " + device.getPathToUSB() + "/" + device.getUSBFName());
+          FileOutputStream file_output = new FileOutputStream (new java.io.File(device.getPathToUSB() + "/" + device.getUSBFName()));
 
           // Wrap the FileOutputStream with a DataOutputStream
           DataOutputStream data_out = new DataOutputStream (file_output);
