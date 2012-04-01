@@ -21,8 +21,9 @@
  public class Main
  {
 	// This is a test
+	// This is a test from Lyra
  	// Input Options
- 	private static String MAIN_MENU_QUIT   = "q";
+ 	private static final String MAIN_MENU_QUIT   = "q";
  	private static final String MAIN_MENU_USB    = "u";
  	private static final String MAIN_MENU_RFS    = "i";
  	private static final String MAIN_MENU_CREATE = "c";
