@@ -20,7 +20,7 @@
  
  public class Main
  {
-	// This is a test bitches
+	// This is a test
  	// Input Options
  	private static final String MAIN_MENU_QUIT   = "q";
  	private static final String MAIN_MENU_USB    = "u";
