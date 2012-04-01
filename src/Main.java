@@ -22,7 +22,7 @@
  {
 	// This is a test
  	// Input Options
- 	private static final String MAIN_MENU_QUIT   = "q";
+ 	private static String MAIN_MENU_QUIT   = "q";
  	private static final String MAIN_MENU_USB    = "u";
  	private static final String MAIN_MENU_RFS    = "i";
  	private static final String MAIN_MENU_CREATE = "c";
